@@ -37,54 +37,54 @@ The evaluate_model_on_test() function was written in order to test the classifie
 Firstly, 5 randomly selected images were displayed along with their gender labels in order to get an idea on what the images look like and how they relate to their labels (Figure 1).
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%201)
-### Figure 1. 5 randomly sampled images and their target labels
+##### Figure 1. 5 randomly sampled images and their target labels
 
 The gender distributions were computed and shown in a bar chart (Figure 2). It can be seen that there are more images with the gender of the celebrity in the image being female than male, where 17320 images were of females and 12680 images were of males.
 
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%202)
-### Figure 2. Gender distributions in the CelebA30k dataset.
+##### Figure 2. Gender distributions in the CelebA30k dataset.
 
 Moreover, a plot showing the number of images with each of the attributes present in them was generated (Figure 3). It can be seen that the ‘No_Beard’ attribute was seen in the highest number of images (nearly 25000), while the attribute seen in the lowest number of images was ‘Bald’ (1000 or so).
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%203)
-### Figure 3. Plot showing the number of images with each attribute.
+##### Figure 3. Plot showing the number of images with each attribute.
 
 Additionally, correlations were calculated between the presence of each of the attributes and the gender being male (Figure 4). The blue lines represent the negative correlations, showing the attributes that have a negative correlation with being male. The red lines show the correlations that are positive between being male and the attribute. It can be seen that these are quite consistent. For example, wearing lipstick is expected to be more positively correlated with being female than with being male, and this is seen here as well. On the other hand, attributes like having  a mustache are more positively correlated with being male, meaning they are most likely to be seen in males than in females, which is also expected.
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%204)
-### Figure 4. Correlations between ‘Male’ in the CelebA30k dataset and presence of each attribute.
+##### Figure 4. Correlations between ‘Male’ in the CelebA30k dataset and presence of each attribute.
 
 The 4 different models made with the different combinations of learning rates (0.001 or 0.0001) and the strategy used to train the models (strategy 1 or strategy 2) generated different losses and accuracies at the training and validation stages in each epoch, which can be seen in the figures 5-8, below. The plots showing the training and validation losses can be seen in figures 9-12, which show the overall patterns observed for these. The different combinations of strategies and learning rates were used to generate 4 deep learning models, with a fixed 10 epochs during the training phase for each one. Strategy 1 is the one which involves freezing all the convolutional layers and only optimizing the classifier head during training, while strategy 2 represents the strategy involving freezing all the convolutional layers except for the last convolutional block (block 5, which starts from index 24 in vgg.features). Generally, it can be seen that in 3 out of 4 models, as the number of epochs increases, the training accuracy increases (due to optimizations in the weights of the neurons), but at some point the training accuracy increases such that it is more than the validation accuracy. This can especially be seen in epoch 10 of training in 3 out of 4 deep learning models. This shows that the more epochs are used to optimize the model, the higher the chance of the model overfitting the data. This is more so the case when the learning rate is 0.0001 than when it is 0.001. For example, when strategy 1 is used and the learning rate is set to 0.001, the difference between the training accuracy and the validation accuracy in the 10th epoch is around 2.85% (Figure 5), but when the learning rate is set to 0.0001 (and the strategy is kept as 1), the difference between the training accuracy and the validation accuracy is 3.71%. The same is true for strategy 2, where the difference between the validation and training accuracies is 0% when the learning rate is 0.001, but it is 3.17% when the learning rate is set to 0.0001, though the model trained using strategy 2 with the learning rate set to 0.001 has other issues which will be discussed later. The same pattern is observed with the validation and training losses, where a higher loss is seen for the validation stage than for training, and the differences seen between the learning rates and the strategies is proportional to the ones seen and discussed for the accuracies. The second strategy involves optimizing not just the classifier head, but also the last convolutional block, which may have made it so more epochs of training would be needed for the models trained with the second strategy to result in the same level of overfit as seen with those trained with the first strategy. 
 An interesting point to note is that when strategy 2 is used with a learning rate of 0.001, the accuracy actually decreases when we go from epoch 1 (training accuracy: 0.6953) to epoch 2 (training accuracy: 0.5773). This is probably because the learning rate of 0.001 is too high which makes the initial weights (pretrained) get destabilized. This is also supported by the fact that the training accuracy stays stuck at 0.5773 across multiple epochs, as the learning rate being too high makes the accuracy oscillate rather than reaching a global maximum. It becomes clear where the issue lies when we look at the confusion matrix for this model (Figure 11): The model only predicts class 1 (this is most likely the female class) and never predicts class 0 (this is most likely the male class), which may have been because of the data being higher for females, making the likelihood of any given image being that of a female (especially during training) to be higher than that of being male (Figure 2), which may be why the final accuracy is a bit higher than 50%, with a value of 57.73%. Since more weights are being trained in strategy 2 than in strategy 1, the model is much more sensitive to hyperparameters since more of the weights are being updated in order to get a more optimized version of the model, and more epochs would be needed to train all the weights properly. When the learning rate is set to a lower value of 0.0001, it can be seen that the model learns the data well, resulting in a final training accuracy of 99.54% and a validation accuracy of 96.37% (Figure 8), making it the best performing model out of the 4 models. However, as mentioned earlier, this model (and also the other models, other than the one trained using strategy 2 and a learning rate of 0.001) may have overfit the data to some extent, causing the training accuracy to be higher than the validation accuracy. Hence, it’s possible that with more epochs of training and with a learning rate that lies somewhere between 0.001 and 0.0001, the model will be able to learn from the data in a better way and be able to generalize to new data well. 
 When it comes to the performance of the models on the test data, it can be seen that the performance on the validation data is nearly proportional to the performance on the test set: The model with the highest validation accuracy at the 10th epoch (which was strategy 2 with learning rate of 0.0001) was the one with the highest accuracy on the test set (96.37%), and the second best (test accuracy: 95.1%) was the one trained with strategy 1 and a learning rate of 0.0001, and the third best (test accuracy: 94.8%) is the one which was trained with strategy 1 and learning rate of 0.001, while the one trained with strategy 2 and learning rate of 0.001 performed the worst (test accuracy: 57.73%). 
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%205)
-### Figure 5. Data about all 10 epochs of training the model using strategy 1 with learning rate = 0.001.
+#### Figure 5. Data about all 10 epochs of training the model using strategy 1 with learning rate = 0.001.
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%206)
-### Figure 6. Data about all 10 epochs of training the model using strategy 2 with learning rate = 0.001.
+#### Figure 6. Data about all 10 epochs of training the model using strategy 2 with learning rate = 0.001.
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%207)
-### Figure 7. Data about all 10 epochs of training the model using strategy 1 with learning rate = 0.0001.
+#### Figure 7. Data about all 10 epochs of training the model using strategy 1 with learning rate = 0.0001.
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%208)
-### Figure 8. Data about all 10 epochs of training the model using strategy 2 with learning rate = 0.0001.
+#### Figure 8. Data about all 10 epochs of training the model using strategy 2 with learning rate = 0.0001.
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%209)
-### Figure 9. Loss curves for the training (Train) and validation (Val) stages for each of the models.  
+#### Figure 9. Loss curves for the training (Train) and validation (Val) stages for each of the models.  
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%2010)
-### Figure 10. Confusion matrix for the predictions made on the test set by the model trained with strategy 1 and learning rate of 0.001
+#### Figure 10. Confusion matrix for the predictions made on the test set by the model trained with strategy 1 and learning rate of 0.001
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%2011)
-### Figure 11. Confusion matrix for the predictions made on the test set by the model trained with strategy 2 and learning rate of 0.001
+#### Figure 11. Confusion matrix for the predictions made on the test set by the model trained with strategy 2 and learning rate of 0.001
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%2012)
-### Figure 12. Confusion matrix for the predictions made on the test set by the model trained with strategy 1 and learning rate of 0.0001
+#### Figure 12. Confusion matrix for the predictions made on the test set by the model trained with strategy 1 and learning rate of 0.0001
 
 ![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%2013)
-### Figure 13. Confusion matrix for the predictions made on the test set by the model trained with strategy 2 and learning rate of 0.0001
+#### Figure 13. Confusion matrix for the predictions made on the test set by the model trained with strategy 2 and learning rate of 0.0001
 
 
 
