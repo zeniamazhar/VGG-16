@@ -1,4 +1,4 @@
-# Fine-tuning BERT For Gender Classification Using CelebA Dataset From Kaggle
+# Transfer Learning with VGG-16 For Gender Classification Using CelebA Dataset From Kaggle
 
 ## Introduction 
 The main goal here is to perform binary gender classification on a subset of CelebA dataset containing facial images of celebrities, by using transfer learning with a pretrained VGG-16 model. Moreover, 2 learning rates will be experimented to see which one performs better (0.001 vs. 0.0001), and 2 different fine-tuning strategies will be explored: (1) freeze all convolutional layers and train only the classifier head, and (2) freeze all weights, but fine-tune the last convolutional block with the classifier head. In all cases, the number of epochs will be fixed to 10.
