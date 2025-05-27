@@ -4,33 +4,33 @@
 The main goal here is to perform binary gender classification on a subset of CelebA dataset containing facial images of celebrities, by using transfer learning with a pretrained VGG-16 model. Moreover, 2 learning rates will be experimented to see which one performs better (0.001 vs. 0.0001), and 2 different fine-tuning strategies will be explored: (1) freeze all convolutional layers and train only the classifier head, and (2) freeze all weights, but fine-tune the last convolutional block with the classifier head. In all cases, the number of epochs will be fixed to 10.
 
 ## Methodology
-Visualizing/Understanding The Dataset
-5 random images with their labels
+### 1. Visualizing/Understanding The Dataset
+#### a. 5 random images with their labels
 Matplotlib was used to visualize 5 images that were randomly sampled from the dataset. I looped over the indices of the randomly selected images and showed their images as well as their labels (“female” if the Male column has the value of -1, and “male” if it has the value of 1). This was done by enumerating the sampled data to access the rows and get the filenames of each of the sampled images to be able to open them from the images.
 
-## Counts of each gender
+#### b. Counts of each gender
 Matplotlib was used to visualize the total number of images with males and females. These counts were generated using the value_counts() method and sorted using the sort_index() method. A bar chart was generated to show the number of images of each gender. There were 17320 images of females and 12680 images of males.
 
-## Null values in each column
+#### c. Null values in each column
 The isnull() method was used with the sum() method to get the total number of null values present in the dataset for each of the columns, in order to see if any preprocessing step needs to be included to deal with these values. There were 0 null values for all of the columns, so this step wasn’t needed.
 
-## Attribute counts
+#### d. Attribute counts
 The number of instances of each of the attributes being present in the images were plotted using Matplotlib.
 
-## Correlations between attributes and gender 
+#### e. Correlations between attributes and gender 
 A plot was generated to visualize the correlation between being male and having a certain attribute, where negative correlations show that the attribute is present less in males than in females, and positive correlations show that the attribute is present more in males and less in females.
 
-## Preparing The Data
+### 2. Preparing The Data
 After using train_test_split from the scikit-learn library to get an 80% train, 10% validation and 10% test split, transform.Compose() from torchvision.transforms was used to transform the images in these ways: (1) Resize images to 224 x 224, (2) convert the images to tensors, (3) normalize them, and (4) do a horizontal flip. A Dataset class was written to take the images and return their images with their labels (label of - 1 was changed to 0 for the binary classification). DataLoader objects were then made by using DataLoader from torch.utils.data, to ensure the training data and the validation data is loaded efficiently, and the batch_size was set to 64. Generally speaking, a batch size of 32, 64 or 128 works well during training, so 64 was selected for the sake of ensuring there’s enough GPU memory and the training isn’t too slow either. 
 
-## Transfer learning with VGG-16
+### 3. Transfer learning with VGG-16
 First, the VGG-16 model was loaded with pretrained being set to true. The last layer was modified so that it would be a linear activation layer with one output. Sigmoid activation wasn’t applied instead of linear here, because the binary cross entropy loss function (to be used in the next stage) applies the sigmoid activation itself.
 
-## Fine-Tuning and Training The Model
+### 4. Fine-Tuning and Training The Model
 A function called get_model was written in order to make a model with the fine-tuning strategy specified as its parameter (1 or 2). The strategy can either be strategy 1 (freeze all convolutional layers and only optimize the classifier head) or strategy 2 (freeze all convolutional blocks except for the last one, and train this last block with the classifier head). The next function, train_model is made to take the following parameters: the model (made with get_model()), the train_loader, val_loader, optimizer (can be torch.optim.SGD() or torch.optim.Adam()), the criterion for calculating the loss (in our case this was BCEWithLogitsLoss()), and the number of epochs to be trained (set to 10 by default). As mentioned earlier, the learning rates 0.001 and 0.0001 need to be experimented. Moreover, the two fine-tuning strategies need to be tried, where in one strategy, all the convolutional layers need to be frozen while only training the classifier layers (strategy 1). The other strategy (strategy 2) involves freezing all convolutional layers except for the last convolutional layer block (block 5, which starts from index 24 in vgg.features). So, in total, 4 separate models were trained with all combinations of learning rates and fine-tuning strategies. The loss function was chosen to be BCEWithLogitsLoss(), which computes binary cross entropy loss while internally applying the sigmoid function to the model’s raw outputs (logits). This allows us to use raw logits during training while still evaluating how well the predicted probabilities align with the true binary labels. For the optimizer, which has the task of updating the weights according to the gradients of the loss calculated, was chosen to be the torch.optim.Adam(), where for each batch of training data, optimizer.zero_grad() was used to clear all previous gradients, then loss.backward() was used to backpropagate to compute the gradients, and then optimizer.step() was used to update the weights according to the gradients that were computed, and this was done for 10 epochs. The accuracies and losses were tracked by using separate lists, and are returned at the end of the function. The model was validated after every epoch, with the same methods of calculating the loss and accuracies as in the training stage. 
 Another function, plot_loss_curves() was defined in order to use the losses computed in the previous function to generate curves for the training and validation losses for each of the 4 models trained. 
 
-## Testing The Classifier On Test Set
+#### 5. Testing The Classifier On Test Set
 The evaluate_model_on_test() function was written in order to test the classifier on the test set. The function takes the model, the test_loader and the device as parameters, and uses BCEWithLogitsLoss() to calculate the losses seen in the test set predictions . The accuracy is calculated by counting the number of predictions that were made correctly and dividing this by the total number of predictions made.
 
 ## Results
