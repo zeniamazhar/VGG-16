@@ -36,7 +36,6 @@ The evaluate_model_on_test() function was written in order to test the classifie
 ## Results
 Firstly, 5 randomly selected images were displayed along with their gender labels in order to get an idea on what the images look like and how they relate to their labels (Figure 1).
 
-
 ### Figure 1. 5 randomly sampled images and their target labels
 
 The gender distributions were computed and shown in a bar chart (Figure 2). It can be seen that there are more images with the gender of the celebrity in the image being female than male, where 17320 images were of females and 12680 images were of males.
@@ -71,6 +70,7 @@ When it comes to the performance of the models on the test data, it can be seen 
 
 ### Figure 10. Confusion matrix for the predictions made on the test set by the model trained with strategy 1 and learning rate of 0.001
 
+![](https://github.com/zeniamazhar/VGG-16/blob/main/Figure%2011)
 ### Figure 11. Confusion matrix for the predictions made on the test set by the model trained with strategy 2 and learning rate of 0.001
 
 ### Figure 12. Confusion matrix for the predictions made on the test set by the model trained with strategy 1 and learning rate of 0.0001
